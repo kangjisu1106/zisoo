@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>통합 파동 효과 뷰어</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    cursor: crosshair;
+}
+
+/* Home Button */
+#home-button {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#home-button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 100%);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+#home-button svg {
+    width: 24px;
+    height: 24px;
+    fill: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+#home-button:hover svg {
+    fill: rgba(255, 255, 255, 1);
+}
+
+/* Mode Toggle Buttons */
+.mode-selector {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px 25px;
+    border-radius: 50px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.mode-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 25px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: bold;
+    backdrop-filter: blur(10px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mode-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.4) 100%);
+    color: rgba(255, 255, 255, 1);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Wave Mode Styles */
+.wave-mode {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+.left-section {
+    width: 50%;
+    height: 100vh;
+    position: relative;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: crosshair;
+    overflow: hidden;
+}
+
+#canvas {
+    display: block;
+    background: #000;
+    width: 100%;
+    height: 100%;
+}
+
+.right-section {
+    width: 50%;
+    height: 100vh;
+    position: relative;
+    perspective: 1200px;
+    overflow: hidden;
+    cursor: pointer;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.01) 0%, rgba(0, 0, 0, 1) 70%);
+}
+
+.scene {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(45deg);
+    transition: transform 0.5s ease-out;
+}
+
+.circle-container {
+    position: absolute;
+    transform-style: preserve-3d;
+    animation: float 12s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    opacity: 0;
+    cursor: pointer;
+    will-change: transform, opacity;
+    filter: contrast(1.2) brightness(1.1);
+}
+
+.circle {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+}
+
+.circle::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ring {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.ring::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-style: dashed;
+    animation: rotate 20s linear infinite;
+}
+
+.ring::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.ring1 { animation: expand1 12s infinite; border-width: 1px; }
+.ring2 { animation: expand2 12s infinite; border-width: 1px; animation-delay: -1.5s; }
+.ring3 { animation: expand3 12s infinite; border-width: 0.8px; animation-delay: -3s; }
+.ring4 { animation: expand4 12s infinite; border-width: 0.8px; animation-delay: -4.5s; }
+.ring5 { animation: expand5 12s infinite; border-width: 0.6px; animation-delay: -6s; }
+
+.section-label {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 20px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Fabric Mode Styles */
+.fabric-mode {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+#fabricCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.instruction {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    animation: pulse 3s ease-in-out infinite;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+    0% { transform: translateZ(-800px) rotateX(0deg) rotateY(0deg); opacity: 0; }
+    10% { opacity: 0.3; }
+    20% { opacity: 1; transform: translateZ(-400px) rotateX(15deg) rotateY(15deg); }
+    80% { opacity: 1; transform: translateZ(400px) rotateX(-15deg) rotateY(-15deg); }
+    90% { opacity: 0.3; }
+    100% { transform: translateZ(800px) rotateX(0deg) rotateY(0deg); opacity: 0; }
+}
+
+@keyframes expand1 {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.8; border-color: rgba(255, 255, 255, 0.4); }
+    50% { transform: translate(-50%, -50%) scale(1.5) rotate(180deg); opacity: 0.4; border-color: rgba(255, 255, 255, 0.6); }
+    100% { transform: translate(-50%, -50%) scale(2) rotate(360deg); opacity: 0; border-color: rgba(255, 255, 255, 0.2); }
+}
+
+@keyframes expand2 {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.6; border-color: rgba(255, 255, 255, 0.3); }
+    50% { transform: translate(-50%, -50%) scale(1.8) rotate(-180deg); opacity: 0.3; border-color: rgba(255, 255, 255, 0.5); }
+    100% { transform: translate(-50%, -50%) scale(2.5) rotate(-360deg); opacity: 0; border-color: rgba(255, 255, 255, 0.1); }
+}
+
+@keyframes expand3 {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(45deg); opacity: 0.4; border-color: rgba(255, 255, 255, 0.25); }
+    50% { transform: translate(-50%, -50%) scale(2.2) rotate(225deg); opacity: 0.2; border-color: rgba(255, 255, 255, 0.4); }
+    100% { transform: translate(-50%, -50%) scale(3) rotate(405deg); opacity: 0; border-color: rgba(255, 255, 255, 0.05); }
+}
+
+@keyframes expand4 {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(-30deg); opacity: 0.3; border-color: rgba(255, 255, 255, 0.2); }
+    50% { transform: translate(-50%, -50%) scale(2.8) rotate(-210deg); opacity: 0.15; border-color: rgba(255, 255, 255, 0.3); }
+    100% { transform: translate(-50%, -50%) scale(3.5) rotate(-390deg); opacity: 0; border-color: rgba(255, 255, 255, 0.03); }
+}
+
+@keyframes expand5 {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(60deg); opacity: 0.2; border-color: rgba(255, 255, 255, 0.15); }
+    50% { transform: translate(-50%, -50%) scale(3.2) rotate(300deg); opacity: 0.1; border-color: rgba(255, 255, 255, 0.25); }
+    100% { transform: translate(-50%, -50%) scale(4) rotate(420deg); opacity: 0; border-color: rgba(255, 255, 255, 0.02); }
+}
+
+@media (max-width: 768px) {
+    #home-button {
+        width: 45px;
+        height: 45px;
+        left: 15px;
+        top: 15px;
+    }
+    
+    #home-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .mode-selector {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+        top: 15px;
+    }
+    
+    .mode-btn {
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+    
+    .wave-mode {
+        flex-direction: column;
+    }
+    
+    .left-section, .right-section {
+        width: 100%;
+        height: 50vh;
+    }
+    
+    .left-section {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="home-button" onclick="goHome()">
+    <svg viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+</div>
+
+<div class="mode-selector">
+    <button class="mode-btn active" onclick="switchMode('wave')">기하학적 파동</button>
+    <button class="mode-btn" onclick="switchMode('fabric')">찢어진 천 파동</button>
+</div>
+
+<!-- Wave Mode -->
+<div id="waveMode" class="wave-mode">
+    <div class="left-section">
+        <div class="section-label">Geometric Wave Lines</div>
+        <canvas id="canvas"></canvas>
+    </div>
+    <div class="right-section">
+        <div class="section-label">3D Floating Circles</div>
+        <div class="scene"></div>
+    </div>
+</div>
+
+<!-- Fabric Mode -->
+<div id="fabricMode" class="fabric-mode hidden">
+    <canvas id="fabricCanvas"></canvas>
+    <div class="instruction">클릭하여 찢어진 천의 파동을 생성하세요</div>
+</div>
+
+<script>
+let currentMode = 'wave';
+let waveAnimationId;
+let fabricAnimationId;
+
+// Home navigation function
+function goHome() {
+    window.location.href = 'index.html';
+}
+
+// Mode switching functionality
+function switchMode(mode) {
+    if (currentMode === mode) return;
+    
+    currentMode = mode;
+    
+    // Update button states
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Stop current animations
+    if (waveAnimationId) cancelAnimationFrame(waveAnimationId);
+    if (fabricAnimationId) cancelAnimationFrame(fabricAnimationId);
+    
+    // Switch displays
+    if (mode === 'wave') {
+        document.getElementById('waveMode').classList.remove('hidden');
+        document.getElementById('fabricMode').classList.add('hidden');
+        initWaveMode();
+    } else {
+        document.getElementById('waveMode').classList.add('hidden');
+        document.getElementById('fabricMode').classList.remove('hidden');
+        initFabricMode();
+    }
+}
+
+// ===== WAVE MODE CODE =====
+let waveSources = [];
+let geometricLines = [];
+let lastWaveTime = 0;
+let particleSystem = [];
+let rightCircles = [];
+
+class WaveSource {
+    constructor(x, y, intensity = 1, fromRight = false) {
+        this.x = x;
+        this.y = y;
+        this.intensity = intensity;
+        this.time = 0;
+        this.maxTime = fromRight ? 6000 : 4000;
+        this.frequency = fromRight ? 0.025 : 0.02;
+        this.amplitude = fromRight ? 50 : 30;
+        this.fromRight = fromRight;
+        this.color = 'white';
+    }
+
+    update() {
+        this.time += 16;
+        const fadeOut = Math.max(0, 1 - this.time / this.maxTime);
+        this.amplitude = (this.fromRight ? 50 : 30) * fadeOut * this.intensity;
+        return this.time < this.maxTime && this.amplitude > 0.1;
+    }
+
+    getWaveHeight(x, y) {
+        if (this.amplitude <= 0) return 0;
+        const distance = Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+        const wave = Math.sin(distance * this.frequency + this.time * 0.008) * this.amplitude;
+        const falloff = Math.max(0, 1 - distance / (this.fromRight ? 500 : 400));
+        return wave * falloff;
+    }
+
+    getWaveIntensity(x, y) {
+        const distance = Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+        const fadeOut = Math.max(0, 1 - this.time / this.maxTime);
+        const falloff = Math.max(0, 1 - distance / (this.fromRight ? 400 : 300));
+        return fadeOut * falloff * this.intensity;
+    }
+}
+
+class GeometricLine {
+    constructor(x1, y1, x2, y2, type = 'horizontal') {
+        this.originalX1 = x1;
+        this.originalY1 = y1;
+        this.originalX2 = x2;
+        this.originalY2 = y2;
+        this.type = type;
+        this.opacity = 1;
+        this.segments = 30;
+        this.thickness = 1;
+        this.glowIntensity = 0;
+    }
+
+    update(waveSources) {
+        const segments = [];
+        let maxIntensity = 0;
+
+        for (let i = 0; i <= this.segments; i++) {
+            const t = i / this.segments;
+            const x = this.originalX1 + (this.originalX2 - this.originalX1) * t;
+            const y = this.originalY1 + (this.originalY2 - this.originalY1) * t;
+
+            let totalWaveX = 0;
+            let totalWaveY = 0;
+            let totalIntensity = 0;
+            let hasRightWave = false;
+
+            waveSources.forEach(source => {
+                const waveHeight = source.getWaveHeight(x, y);
+                const intensity = source.getWaveIntensity(x, y) * 1.5;
+                if (source.fromRight) hasRightWave = true;
+
+                const dx = x - source.x;
+                const dy = y - source.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 0) {
+                    const normalizedX = dx / distance;
+                    const normalizedY = dy / distance;
+
+                    if (this.type === 'horizontal') {
+                        totalWaveY += waveHeight * (source.fromRight ? 1.2 : 0.8);
+                        totalWaveX += waveHeight * normalizedX * (source.fromRight ? 0.5 : 0.3);
+                    } else if (this.type === 'vertical') {
+                        totalWaveX += waveHeight * (source.fromRight ? 1.2 : 0.8);
+                        totalWaveY += waveHeight * normalizedY * (source.fromRight ? 0.5 : 0.3);
+                    } else {
+                        totalWaveX += waveHeight * normalizedX * (source.fromRight ? 0.7 : 0.5);
+                        totalWaveY += waveHeight * normalizedY * (source.fromRight ? 0.7 : 0.5);
+                    }
+                }
+
+                totalIntensity += intensity;
+            });
+
+            maxIntensity = Math.max(maxIntensity, totalIntensity);
+            segments.push({
+                x: x + totalWaveX,
+                y: y + totalWaveY,
+                intensity: totalIntensity,
+                hasRightWave: hasRightWave
+            });
+        }
+
+        this.segments = segments;
+        this.opacity = Math.min(1, 0.3 + maxIntensity * 3);
+        this.thickness = 1 + maxIntensity * 2;
+        this.glowIntensity = maxIntensity;
+    }
+
+    draw() {
+        if (this.segments.length < 2) return;
+        const ctx = document.getElementById('canvas').getContext('2d');
+
+        for (let pass = 0; pass < 3; pass++) {
+            ctx.globalAlpha = this.opacity * (pass === 0 ? 0.5 : pass === 1 ? 0.2 : 0.1);
+            ctx.lineWidth = this.thickness * (pass + 1);
+            ctx.beginPath();
+            ctx.moveTo(this.segments[0].x, this.segments[0].y);
+
+            for (let i = 1; i < this.segments.length - 2; i++) {
+                const xc = (this.segments[i].x + this.segments[i + 1].x) / 2;
+                const yc = (this.segments[i].y + this.segments[i + 1].y) / 2;
+                ctx.quadraticCurveTo(this.segments[i].x, this.segments[i].y, xc, yc);
+            }
+
+            if (this.segments.length >= 2) {
+                const lastTwo = this.segments.slice(-2);
+                ctx.quadraticCurveTo(lastTwo[0].x, lastTwo[0].y, lastTwo[1].x, lastTwo[1].y);
+            }
+
+            ctx.strokeStyle = pass === 0 ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.2)';
+            ctx.stroke();
+        }
+
+        this.segments.forEach((segment, i) => {
+            if (segment.intensity > 0.4) {
+                ctx.globalAlpha = segment.intensity * 0.4;
+                for (let r = 1; r <= 3; r++) {
+                    ctx.fillStyle = `rgba(255,255,255,${0.3 / r})`;
+                    ctx.beginPath();
+                    ctx.arc(segment.x, segment.y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        });
+    }
+}
+
+function initWaveMode() {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+        const leftSection = document.querySelector('.left-section');
+        canvas.width = leftSection.clientWidth;
+        canvas.height = leftSection.clientHeight;
+    }
+    
+    resizeCanvas();
+    
+    function createGeometricLines() {
+        if (canvas.width === 0 || canvas.height === 0) {
+            setTimeout(createGeometricLines, 100);
+            return;
+        }
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const text = "WAVE";
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = Math.min(canvas.width * 0.8, 400);
+        tempCanvas.height = Math.min(canvas.height * 0.3, 100);
+
+        if (tempCanvas.width === 0 || tempCanvas.height === 0) {
+            tempCanvas.width = 400;
+            tempCanvas.height = 100;
+        }
+
+        tempCtx.font = `bold ${tempCanvas.height * 0.4}px Arial`;
+        tempCtx.textAlign = "center";
+        tempCtx.textBaseline = "middle";
+        tempCtx.fillStyle = 'white';
+        tempCtx.fillText(text, tempCanvas.width / 2, tempCanvas.height / 2);
+
+        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        geometricLines = [];
+
+        // Create horizontal lines
+        for (let y = 1; y < tempCanvas.height - 1; y += 1) {
+            let inText = false;
+            let lineStart = null;
+
+            for (let x = 0; x < tempCanvas.width; x += 1) {
+                const index = (y * tempCanvas.width + x) * 4;
+                const alpha = imageData.data[index + 3];
+
+                if (alpha > 100 && !inText) {
+                    lineStart = x;
+                    inText = true;
+                } else if (alpha <= 100 && inText && lineStart !== null) {
+                    const x1 = centerX + (lineStart - tempCanvas.width / 2);
+                    const x2 = centerX + (x - tempCanvas.width / 2);
+                    const lineY = centerY + (y - tempCanvas.height / 2);
+                    geometricLines.push(new GeometricLine(x1, lineY, x2, lineY, 'horizontal'));
+                    inText = false;
+                }
+            }
+
+            if (inText && lineStart !== null) {
+                const x1 = centerX + (lineStart - tempCanvas.width / 2);
+                const x2 = centerX + (tempCanvas.width - tempCanvas.width / 2);
+                const lineY = centerY + (y - tempCanvas.height / 2);
+                geometricLines.push(new GeometricLine(x1, lineY, x2, lineY, 'horizontal'));
+            }
+        }
+
+        // Create vertical lines
+        for (let x = 2; x < tempCanvas.width - 2; x += 2) {
+            let inText = false;
+            let lineStart = null;
+
+            for (let y = 0; y < tempCanvas.height; y += 1) {
+                const index = (y * tempCanvas.width + x) * 4;
+                const alpha = imageData.data[index + 3];
+
+                if (alpha > 100 && !inText) {
+                    lineStart = y;
+                    inText = true;
+                } else if (alpha <= 100 && inText && lineStart !== null) {
+                    const y1 = centerY + (lineStart - tempCanvas.height / 2);
+                    const y2 = centerY + (y - tempCanvas.height / 2);
+                    const lineX = centerX + (x - tempCanvas.width / 2);
+                    geometricLines.push(new GeometricLine(lineX, y1, lineX, y2, 'vertical'));
+                    inText = false;
+                }
+            }
+
+            if (inText && lineStart !== null) {
+                const y1 = centerY + (lineStart - tempCanvas.height / 2);
+                const y2 = centerY + (tempCanvas.height - tempCanvas.height / 2);
+                const lineX = centerX + (x - tempCanvas.width / 2);
+                geometricLines.push(new GeometricLine(lineX, y1, lineX, y2, 'vertical'));
+            }
+        }
+    }
+    
+    function createCircle(enhanced = false, targetX = null, targetY = null) {
+        const container = document.createElement('div');
+        container.className = 'circle-container';
+
+        const circle = document.createElement('div');
+        circle.className = 'circle';
+
+        const size = enhanced ? Math.random() * 25 + 15 : Math.random() * 15 + 8;
+        circle.style.width = size + 'px';
+        circle.style.height = size + 'px';
+
+        const circleColor = `rgba(255,255,255,${0.6})`;
+        circle.style.borderColor = circleColor;
+
+        const rightSection = document.querySelector('.right-section');
+        const ringCount = enhanced ? 7 : 5;
+
+        for (let i = 1; i <= ringCount; i++) {
+            const ring = document.createElement('div');
+            ring.className = `ring ring${i}`;
+            const ringSize = size * (2 + i * (enhanced ? 0.7 : 0.5));
+            ring.style.width = ringSize + 'px';
+            ring.style.height = ringSize + 'px';
+            ring.style.borderColor = `rgba(255,255,255,${0.6 - i * 0.1})`;
+            container.appendChild(ring);
+        }
+
+        if (targetX !== null && targetY !== null) {
+            container.style.left = targetX + 'px';
+            container.style.top = targetY + 'px';
+        } else {
+            container.style.left = Math.random() * rightSection.clientWidth + 'px';
+            container.style.top = Math.random() * rightSection.clientHeight + 'px';
+        }
+
+        const delay = Math.random() * 5;
+        container.style.animationDelay = delay + 's';
+
+        container.appendChild(circle);
+        document.querySelector('.scene').appendChild(container);
+        rightCircles.push(container);
+
+        const lifespan = enhanced ? 12000 : 8000;
+        setTimeout(() => {
+            const index = rightCircles.indexOf(container);
+            if (index > -1) {
+                rightCircles.splice(index, 1);
+            }
+            container.remove();
+        }, lifespan);
+    }
+    
+    function animateWave() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        waveSources = waveSources.filter(source => source.update());
+
+        // Draw geometric grid
+        const gridSize = Math.min(canvas.width, canvas.height) / 25;
+        ctx.globalAlpha = 0.03;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 0.5;
+
+        for (let x = 0; x < canvas.width; x += gridSize) {
+            let totalWave = 0;
+            waveSources.forEach(source => {
+                totalWave += source.getWaveHeight(x, canvas.height / 2) * 0.08;
+            });
+            ctx.beginPath();
+            ctx.moveTo(x + totalWave, 0);
+            ctx.lineTo(x + totalWave, canvas.height);
+            ctx.stroke();
+        }
+
+        for (let y = 0; y < canvas.height; y += gridSize) {
+            let totalWave = 0;
+            waveSources.forEach(source => {
+                totalWave += source.getWaveHeight(canvas.width / 2, y) * 0.08;
+            });
+            ctx.beginPath();
+            ctx.moveTo(0, y + totalWave);
+            ctx.lineTo(canvas.width, y + totalWave);
+            ctx.stroke();
+        }
+
+        // Draw wave rings
+        waveSources.forEach(source => {
+            if (source.amplitude > 0.5) {
+                const maxRadius = Math.min(canvas.width, canvas.height) * 0.5;
+                const ringSpacing = source.fromRight ? 8 : 12;
+                for (let radius = 4; radius < maxRadius; radius += ringSpacing) {
+                    const wave = Math.sin(radius * source.frequency + source.time * 0.008);
+                    const adjustedRadius = Math.max(1, radius + wave * (source.fromRight ? 8 : 6));
+                    const opacity = (source.amplitude / (source.fromRight ? 50 : 30)) * (1 - radius / maxRadius) * 0.15;
+                    if (opacity > 0.01) {
+                        ctx.globalAlpha = opacity;
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                        ctx.lineWidth = source.fromRight ? 1 : 0.8;
+                        ctx.beginPath();
+                        ctx.arc(source.x, source.y, adjustedRadius, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                }
+            }
+        });
+
+        ctx.globalAlpha = 1;
+        geometricLines.forEach(line => {
+            line.update(waveSources);
+            line.draw();
+        });
+
+        waveAnimationId = requestAnimationFrame(animateWave);
+    }
+
+    // Event listeners for wave mode
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const now = Date.now();
+        if (now - lastWaveTime > 60) {
+            waveSources.push(new WaveSource(mouseX, mouseY, 0.8));
+            lastWaveTime = now;
+        }
+    });
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        waveSources.push(new WaveSource(mouseX, mouseY, 3));
+
+        const rightSection = document.querySelector('.right-section');
+        const rightRect = rightSection.getBoundingClientRect();
+        const targetX = rightSection.clientWidth * (mouseX / canvas.width);
+        const targetY = rightSection.clientHeight * (mouseY / canvas.height);
+        createCircle(true, targetX, targetY);
+    });
+
+    // Right section mouse interaction
+    document.querySelector('.right-section').addEventListener('mousemove', (e) => {
+        const rightSection = document.querySelector('.right-section');
+        const rect = rightSection.getBoundingClientRect();
+        const relativeX = e.clientX - rect.left;
+        const relativeY = e.clientY - rect.top;
+        const xAxis = (rightSection.clientWidth / 2 - relativeX) / 70;
+        const yAxis = (rightSection.clientHeight / 2 - relativeY) / 70;
+        document.querySelector('.scene').style.transform = `rotateX(${45 + yAxis}deg) rotateY(${xAxis}deg)`;
+    });
+
+    document.querySelector('.right-section').addEventListener('click', (e) => {
+        const rightSection = document.querySelector('.right-section');
+        const rect = rightSection.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        createCircle(true, clickX, clickY);
+
+        // Create wave on left side
+        const leftX = canvas.width * (clickX / rightSection.clientWidth);
+        const leftY = canvas.height * (clickY / rightSection.clientHeight);
+        waveSources.push(new WaveSource(leftX, leftY, 2.5, true));
+    });
+
+    createGeometricLines();
+    
+    // Create initial circles
+    for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+            createCircle();
+        }, i * 100);
+    }
+
+    // Start auto circle creation
+    setInterval(() => createCircle(), 2000);
+
+    // Auto wave creation
+    function createAutoWave() {
+        const x = canvas.width * (0.2 + Math.random() * 0.6);
+        const y = canvas.height * (0.2 + Math.random() * 0.6);
+        waveSources.push(new WaveSource(x, y, 1.8));
+        setTimeout(createAutoWave, 4000 + Math.random() * 3000);
+    }
+    createAutoWave();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        createGeometricLines();
+    });
+
+    animateWave();
+}
+
+// ===== FABRIC MODE CODE =====
+let fabricCanvas, fabricCtx;
+let fabricWidth, fabricHeight, fabricTime = 0, fabricMouseX = 0, fabricMouseY = 0;
+let ripples = [], fabricThreads = [];
+
+function initFabricMode() {
+    fabricCanvas = document.getElementById('fabricCanvas');
+    fabricCtx = fabricCanvas.getContext('2d');
+    
+    function resizeFabricCanvas() {
+        fabricWidth = fabricCanvas.width = window.innerWidth;
+        fabricHeight = fabricCanvas.height = window.innerHeight;
+        initializeFabricThreads();
+    }
+
+    function initializeFabricThreads() {
+        fabricThreads = [];
+
+        // Create vertical threads
+        for (let x = 0; x < fabricWidth; x += 8) {
+            fabricThreads.push({
+                type: 'vertical',
+                baseX: x,
+                points: [],
+                thickness: 0.8 + Math.random() * 0.4,
+                tearPoints: [],
+                fiberEnds: []
+            });
+
+            let thread = fabricThreads[fabricThreads.length - 1];
+            
+            for (let y = 0; y < fabricHeight; y += 2) {
+                thread.points.push({
+                    x: x,
+                    y: y,
+                    baseOffset: (Math.random() - 0.5) * 0.5,
+                    microOffset: (Math.random() - 0.5) * 0.2
+                });
+            }
+
+            for (let i = 0; i < Math.random() * 2; i++) {
+                thread.tearPoints.push({
+                    y: Math.random() * fabricHeight,
+                    severity: Math.random() * 0.5 + 0.2,
+                    length: Math.random() * 20 + 10
+                });
+            }
+
+            for (let i = 0; i < Math.random() * 3 + 1; i++) {
+                thread.fiberEnds.push({
+                    y: Math.random() * fabricHeight,
+                    length: Math.random() * 8 + 3,
+                    angle: (Math.random() - 0.5) * Math.PI * 0.3,
+                    thickness: Math.random() * 0.3 + 0.1
+                });
+            }
+        }
+
+        // Create horizontal threads
+        for (let y = 0; y < fabricHeight; y += 16) {
+            fabricThreads.push({
+                type: 'horizontal',
+                baseY: y,
+                points: [],
+                thickness: 0.6 + Math.random() * 0.3,
+                tearPoints: [],
+                fiberEnds: []
+            });
+
+            let thread = fabricThreads[fabricThreads.length - 1];
+            
+            for (let x = 0; x < fabricWidth; x += 4) {
+                thread.points.push({
+                    x: x,
+                    y: y,
+                    baseOffset: (Math.random() - 0.5) * 0.3,
+                    microOffset: (Math.random() - 0.5) * 0.1
+                });
+            }
+
+            for (let i = 0; i < Math.random() * 1 + 1; i++) {
+                thread.tearPoints.push({
+                    x: Math.random() * fabricWidth,
+                    severity: Math.random() * 0.4 + 0.1,
+                    length: Math.random() * 15 + 8
+                });
+            }
+
+            for (let i = 0; i < Math.random() * 2 + 1; i++) {
+                thread.fiberEnds.push({
+                    x: Math.random() * fabricWidth,
+                    length: Math.random() * 6 + 2,
+                    angle: (Math.random() - 0.5) * Math.PI * 0.4,
+                    thickness: Math.random() * 0.2 + 0.05
+                });
+            }
+        }
+    }
+
+    function drawTornFabric() {
+        fabricCtx.fillStyle = '#000';
+        fabricCtx.fillRect(0, 0, fabricWidth, fabricHeight);
+
+        drawFabricDust();
+        drawFabricThreads();
+        drawRipples();
+        drawMouseDisturbance();
+
+        fabricTime += 0.2;
+        fabricAnimationId = requestAnimationFrame(drawTornFabric);
+    }
+
+    function drawFabricDust() {
+        fabricCtx.globalAlpha = 0.03;
+        for (let i = 0; i < 40; i++) {
+            fabricCtx.fillStyle = '#fff';
+            let size = Math.random() * 0.8 + 0.2;
+            fabricCtx.fillRect(Math.random() * fabricWidth, Math.random() * fabricHeight, size, size);
+        }
+        fabricCtx.globalAlpha = 1;
+    }
+
+    function drawFabricThreads() {
+        fabricThreads.forEach(thread => {
+            fabricCtx.save();
+            fabricCtx.strokeStyle = '#fff';
+            fabricCtx.lineWidth = thread.thickness;
+            fabricCtx.globalAlpha = 0.7 + Math.sin(fabricTime * 0.01) * 0.1;
+            fabricCtx.lineCap = 'round';
+
+            if (thread.type === 'vertical') {
+                drawVerticalTornThread(thread);
+            } else {
+                drawHorizontalTornThread(thread);
+            }
+
+            drawFiberEnds(thread);
+            fabricCtx.restore();
+        });
+    }
+
+    function drawVerticalTornThread(thread) {
+        let currentSegment = [];
+
+        thread.points.forEach((point, index) => {
+            let x = point.x, y = point.y;
+
+            let waveOffset = Math.sin((y + fabricTime * 0.8) * 0.006) * 2;
+            waveOffset += Math.sin((y + fabricTime * 1.3) * 0.012) * 1;
+            waveOffset += point.baseOffset + Math.sin(fabricTime * 0.05 + index * 0.1) * point.microOffset;
+
+            let mouseDistance = Math.sqrt(Math.pow(x - fabricMouseX, 2) + Math.pow(y - fabricMouseY, 2));
+            if (mouseDistance < 120) {
+                let mouseInfluence = 1 - mouseDistance / 120;
+                waveOffset += Math.sin((y + fabricTime * 2) * 0.02) * mouseInfluence * 6;
+                waveOffset += (Math.random() - 0.5) * mouseInfluence * 2;
+            }
+
+            ripples.forEach(ripple => {
+                let distance = Math.sqrt(Math.pow(x - ripple.x, 2) + Math.pow(y - ripple.y, 2));
+                if (distance < ripple.maxRadius && distance > ripple.radius - 40) {
+                    let rippleInfluence = Math.exp(-(distance - ripple.radius) * (distance - ripple.radius) / 300) * ripple.life;
+                    waveOffset += Math.sin((distance - ripple.radius) * ripple.frequency + ripple.phase) * ripple.amplitude * rippleInfluence;
+                    if (rippleInfluence > 0.3 && Math.random() < 0.02) {
+                        waveOffset += (Math.random() - 0.5) * ripple.tearForce * 15;
+                    }
+                }
+            });
+
+            let isTorn = false;
+            thread.tearPoints.forEach(tear => {
+                if (Math.abs(y - tear.y) < tear.length) {
+                    isTorn = true;
+                    let tearInfluence = 1 - Math.abs(y - tear.y) / tear.length;
+                    waveOffset += (Math.random() - 0.5) * tear.severity * 20 * tearInfluence;
+                    if (tearInfluence > 0.7 && Math.random() < 0.3) {
+                        if (currentSegment.length > 1) {
+                            drawTornSegment(currentSegment);
+                            currentSegment = [];
+                        }
+                        return;
+                    }
+                }
+            });
+
+            let finalX = x + waveOffset;
+            currentSegment.push({ x: finalX, y: y, isTorn: isTorn });
+
+            if (currentSegment.length > 20 || index === thread.points.length - 1) {
+                drawTornSegment(currentSegment);
+                currentSegment = [];
+            }
+        });
+    }
+
+    function drawHorizontalTornThread(thread) {
+        let currentSegment = [];
+
+        thread.points.forEach((point, index) => {
+            let x = point.x, y = point.y;
+
+            let waveOffset = Math.sin((x + fabricTime * 0.6) * 0.004) * 1.5;
+            waveOffset += Math.sin((x + fabricTime * 1.1) * 0.008) * 0.8;
+            waveOffset += point.baseOffset + Math.sin(fabricTime * 0.03 + index * 0.08) * point.microOffset;
+
+            let mouseDistance = Math.sqrt(Math.pow(x - fabricMouseX, 2) + Math.pow(y - fabricMouseY, 2));
+            if (mouseDistance < 100) {
+                let mouseInfluence = 1 - mouseDistance / 100;
+                waveOffset += Math.sin((x + fabricTime * 1.5) * 0.015) * mouseInfluence * 4;
+            }
+
+            ripples.forEach(ripple => {
+                let distance = Math.sqrt(Math.pow(x - ripple.x, 2) + Math.pow(y - ripple.y, 2));
+                if (distance < ripple.maxRadius && distance > ripple.radius - 30) {
+                    let rippleInfluence = Math.exp(-(distance - ripple.radius) * (distance - ripple.radius) / 200) * ripple.life;
+                    waveOffset += Math.sin((distance - ripple.radius) * ripple.frequency * 1.5 + ripple.phase) * ripple.amplitude * 0.4 * rippleInfluence;
+                }
+            });
+
+            let isTorn = false;
+            thread.tearPoints.forEach(tear => {
+                if (Math.abs(x - tear.x) < tear.length) {
+                    isTorn = true;
+                    let tearInfluence = 1 - Math.abs(x - tear.x) / tear.length;
+                    waveOffset += (Math.random() - 0.5) * tear.severity * 15 * tearInfluence;
+                    if (tearInfluence > 0.6 && Math.random() < 0.2) {
+                        if (currentSegment.length > 1) {
+                            drawTornSegment(currentSegment);
+                            currentSegment = [];
+                        }
+                        return;
+                    }
+                }
+            });
+
+            let finalY = y + waveOffset;
+            currentSegment.push({ x: x, y: finalY, isTorn: isTorn });
+
+            if (currentSegment.length > 15 || index === thread.points.length - 1) {
+                drawTornSegment(currentSegment);
+                currentSegment = [];
+            }
+        });
+    }
+
+    function drawTornSegment(segment) {
+        if (segment.length < 2) return;
+
+        fabricCtx.beginPath();
+        fabricCtx.moveTo(segment[0].x, segment[0].y);
+
+        for (let i = 1; i < segment.length; i++) {
+            let point = segment[i];
+            let prevPoint = segment[i - 1];
+
+            if (point.isTorn || prevPoint.isTorn) {
+                let midX = (prevPoint.x + point.x) / 2 + (Math.random() - 0.5) * 2;
+                let midY = (prevPoint.y + point.y) / 2 + (Math.random() - 0.5) * 2;
+                fabricCtx.quadraticCurveTo(midX, midY, point.x, point.y);
+            } else {
+                let roughX = point.x + (Math.random() - 0.5) * 0.5;
+                let roughY = point.y + (Math.random() - 0.5) * 0.5;
+                fabricCtx.lineTo(roughX, roughY);
+            }
+        }
+
+        fabricCtx.stroke();
+    }
+
+    function drawFiberEnds(thread) {
+        fabricCtx.globalAlpha = 0.4;
+        fabricCtx.lineWidth = 0.3;
+
+        thread.fiberEnds.forEach(fiber => {
+            fabricCtx.beginPath();
+            let startX, startY, endX, endY;
+
+            if (thread.type === 'vertical') {
+                startX = thread.baseX + (Math.random() - 0.5) * 3;
+                startY = fiber.y;
+                endX = startX + Math.cos(fiber.angle) * fiber.length;
+                endY = startY + Math.sin(fiber.angle) * fiber.length;
+            } else {
+                startX = fiber.x;
+                startY = thread.baseY + (Math.random() - 0.5) * 2;
+                endX = startX + Math.cos(fiber.angle) * fiber.length;
+                endY = startY + Math.sin(fiber.angle) * fiber.length;
+            }
+
+            fabricCtx.moveTo(startX, startY);
+            fabricCtx.lineTo(endX, endY);
+            fabricCtx.lineWidth = fiber.thickness;
+            fabricCtx.stroke();
+        });
+
+        fabricCtx.globalAlpha = 1;
+    }
+
+    function drawRipples() {
+        ripples = ripples.filter(ripple => ripple.life > 0);
+
+        ripples.forEach(ripple => {
+            fabricCtx.save();
+
+            for (let ring = 0; ring < 3; ring++) {
+                let ringRadius = ripple.radius + ring * 15;
+                if (ringRadius < ripple.maxRadius) {
+                    fabricCtx.globalAlpha = ripple.life * (0.6 - ring * 0.15);
+                    fabricCtx.strokeStyle = '#fff';
+                    fabricCtx.lineWidth = 1.5 - ring * 0.3;
+                    fabricCtx.beginPath();
+
+                    let points = 60;
+                    for (let i = 0; i <= points; i++) {
+                        let angle = (i / points) * Math.PI * 2;
+                        let radius = ringRadius + Math.sin(angle * 6 + ripple.phase + fabricTime * 0.05) * 2 * ripple.life;
+                        radius += (Math.random() - 0.5) * 1.5 * ripple.life;
+                        let x = ripple.x + Math.cos(angle) * radius;
+                        let y = ripple.y + Math.sin(angle) * radius;
+
+                        if (i === 0) {
+                            fabricCtx.moveTo(x, y);
+                        } else {
+                            fabricCtx.lineTo(x, y);
+                        }
+                    }
+
+                    fabricCtx.closePath();
+                    fabricCtx.stroke();
+                }
+            }
+
+            ripple.radius += ripple.speed;
+            ripple.life -= ripple.decay;
+            fabricCtx.restore();
+        });
+    }
+
+    function drawMouseDisturbance() {
+        fabricCtx.save();
+        fabricCtx.globalAlpha = 0.15;
+        let gradient = fabricCtx.createRadialGradient(fabricMouseX, fabricMouseY, 0, fabricMouseX, fabricMouseY, 60);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        fabricCtx.fillStyle = gradient;
+        fabricCtx.fillRect(fabricMouseX - 60, fabricMouseY - 60, 120, 120);
+        fabricCtx.restore();
+    }
+
+    // Event listeners for fabric mode
+    window.addEventListener('resize', resizeFabricCanvas);
+
+    fabricCanvas.addEventListener('mousemove', (e) => {
+        fabricMouseX = e.clientX;
+        fabricMouseY = e.clientY;
+    });
+
+    fabricCanvas.addEventListener('click', (e) => {
+        ripples.push({
+            x: e.clientX,
+            y: e.clientY,
+            radius: 0,
+            maxRadius: 250 + Math.random() * 150,
+            amplitude: 12 + Math.random() * 18,
+            frequency: 0.08 + Math.random() * 0.12,
+            life: 1.0,
+            decay: 0.008 + Math.random() * 0.004,
+            speed: 2 + Math.random() * 2,
+            phase: Math.random() * Math.PI * 2,
+            tearForce: 0.3 + Math.random() * 0.4
+        });
+    });
+
+    resizeFabricCanvas();
+    drawTornFabric();
+}
+
+// Initialize with wave mode
+window.addEventListener('load', () => {
+    initWaveMode();
+});
+
+// Global event listeners
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'h' || e.key === 'H' || e.key === 'Home') {
+        goHome();
+    }
+    if (e.key === '1') {
+        document.querySelector('.mode-btn').click();
+    } else if (e.key === '2') {
+        document.querySelectorAll('.mode-btn')[1].click();
+    }
+});
+</script>
+
+</body>
+</html>

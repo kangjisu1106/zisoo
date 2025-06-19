@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang=ko>
+<head>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width, initial-scale=1.0">
+<title>Wave Studio</title>
+<link href=https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css rel=stylesheet>
+<link href=https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkMyungjo-Bd.woff2 rel=preload as=font type=font/woff2 crossorigin>
+<style>@font-face{font-family:'BookkMyungjo-Bd';src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkMyungjo-Bd.woff2') format('woff2');font-weight:700;font-style:normal}:root{--primary-light:#1e90ff;--primary-dark:#87ceeb;--bg-light:#fff;--bg-dark:#000;--text-light:#000;--text-dark:#fff;--transition:all .3s cubic-bezier(0.25,0.46,0.45,0.94);--font-primary:'pretendard',sans-serif;--font-serif:'BookkMyungjo-Bd',serif}*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:var(--font-primary);font-size:110px;overflow-x:hidden;transition:background-color .5s ease,color .5s ease;cursor:none}.custom-cursor{position:fixed;width:96px;height:96px;background-image:url('image/mou.png');background-size:contain;background-repeat:no-repeat;background-position:center;pointer-events:none;transform:translate(-50%,-50%);z-index:9999;transition:transform .05s ease;opacity:0}.custom-cursor.image-loaded{opacity:1}.custom-cursor.clicking{transform:translate(-50%,-50%) scale(0.8)}.custom-cursor.hovering{transform:translate(-50%,-50%) scale(1.2)}input,textarea,select{cursor:text!important}.light-mode{background-color:var(--bg-light);color:var(--text-light)}.dark-mode{background-color:var(--bg-dark);color:var(--text-dark)}.horizontal-container{position:relative;height:100vh;overflow:hidden;z-index:10}.slides-wrapper{display:flex;width:300vw;height:100vh;transition:transform .8s cubic-bezier(0.25,0.46,0.45,0.94)}.horizontal-section{width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;position:relative;flex-shrink:0}.vertical-section{width:100vw;min-height:100vh;position:fixed;top:0;left:0;z-index:5;opacity:0;visibility:hidden;transform:translateY(100vh);transition:opacity .8s ease,visibility .8s ease,transform .8s ease;pointer-events:none}.vertical-section.visible{opacity:1;visibility:visible;transform:translateY(0);z-index:15;pointer-events:auto}.horizontal-container.hidden{opacity:0;transform:translateY(-100vh);transition:opacity .8s ease,transform .8s ease}.nav-dots{position:fixed;right:30px;top:50%;transform:translateY(-50%);z-index:1000;display:flex;flex-direction:column;gap:15px}.nav-dot{width:12px;height:12px;border-radius:50%;cursor:pointer;transition:var(--transition)}.light-mode .nav-dot{background:#ddd}.dark-mode .nav-dot{background:#333}.nav-dot.active{transform:scale(1.2)}.light-mode .nav-dot.active{background:#000}.dark-mode .nav-dot.active{background:#fff}.theme-toggle{position:fixed;top:20px;left:20px;width:60px;height:30px;z-index:1000;cursor:pointer;background:rgba(255,255,255,0.1);border:1px solid transparent;border-radius:25px;transition:var(--transition);backdrop-filter:blur(10px)}.theme-toggle::before{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;transition:var(--transition)}.light-mode .theme-toggle{border-color:var(--text-light)}.light-mode .theme-toggle::before{background:var(--text-light);transform:translateX(0)}.dark-mode .theme-toggle{border-color:var(--text-dark)}.dark-mode .theme-toggle::before{background:var(--text-dark);transform:translateX(26px)}.wave-container{width:100%;max-width:1200px;margin:0 auto;transform-style:preserve-3d;display:flex;justify-content:center;align-items:center;flex-direction:column}.wave-svg{width:100%;height:auto;max-height:100vh;transform:rotateX(25deg)}.main-text{cursor:pointer}.light-mode .wave-text{fill:var(--primary-light)}.dark-mode .wave-text{fill:var(--primary-dark)}.light-mode .wave-reflection{fill:url(#waveGradientLight)}.dark-mode .wave-reflection{fill:url(#waveGradientDark)}.light-mode .wave-path{stroke:var(--primary-light)}.dark-mode .wave-path{stroke:var(--primary-dark)}.sphere-section{position:relative}.sphere-section canvas{filter:drop-shadow(0 0 4px #0077FF) brightness(1.1);position:relative;z-index:1}.sphere-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:25vw;height:25vw;background:radial-gradient(circle,rgba(178,255,239,0.5) 0,rgba(0,200,255,0.15) 45%,transparent 100%);border-radius:50%;z-index:0;pointer-events:none;filter:blur(20px)}.sphere-section .type-layout{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:left;width:90%;max-width:900px;pointer-events:none}.sphere-section .big-words span{display:block;font-size:9vw;font-weight:900;line-height:1;font-family:var(--font-serif)}.sphere-section .round-word{display:inline-block;font-size:1.2rem;background:#6febb0;color:black;padding:.5em 1em;border-radius:50%;font-weight:bold;margin-top:1rem}.sphere-section .quote{margin-top:2rem;font-size:1rem;font-weight:400;max-width:300px;text-align:right;margin-left:auto}.wave-section{cursor:none;margin-top:-150px}.wave-section canvas{cursor:default!important}#wave-cursor{position:fixed;width:14px;height:14px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:1000;transition:all .05s ease}.light-mode #wave-cursor{border:1px solid rgba(0,128,255,0.651)}.dark-mode #wave-cursor{border:1px solid #fff}#wave-cursor::after{content:'';position:absolute;width:4px;height:4px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}.light-mode #wave-cursor::after{background:rgba(0,120,200,0.8)}.dark-mode #wave-cursor::after{background:#fff}.list-section{width:100%;min-height:100vh;padding-top:50px;font-size:100px;display:flex;justify-content:center;align-items:center;flex-direction:column;text-align:center}.header{position:relative;height:100px;display:flex;justify-content:space-between;align-items:center;width:100%}.fixed{font-size:50px;white-space:nowrap}.top-left{margin-left:20px}.top-right{margin-right:20px;position:relative}.header-english{display:inline-block}.header-korean{display:none}.top-right:hover .header-english{display:none}.top-right:hover .header-korean{display:inline-block}.marquee-container{margin-top:30px;width:100%;opacity:0;visibility:hidden;transform:translateY(50px);transition:opacity .6s ease .4s,visibility .6s ease .4s,transform .6s ease .4s}.vertical-section.visible .marquee-container{opacity:1;visibility:visible;transform:translateY(0)}.marquee-canvas{width:100%;height:130px;margin-top:20px;display:block;cursor:pointer}.hr-line{width:100%;height:6px;margin:8px 0;display:block}.light-mode .hr-line{background:var(--text-light)}.dark-mode .hr-line{background:var(--text-dark)}.scroll-indicator,.slide-indicator{position:absolute;bottom:30px;text-align:center;font-size:14px;transition:color .5s ease}.scroll-indicator{left:50%;transform:translateX(-50%);animation:bounce 2s infinite}.slide-indicator{right:30px;animation:slideIndicator 2s infinite}.light-mode .scroll-indicator,.light-mode .slide-indicator{color:var(--primary-light)}.dark-mode .scroll-indicator,.dark-mode .slide-indicator{color:var(--primary-dark)}.scroll-indicator i,.slide-indicator i{display:block;font-size:24px;margin-bottom:5px}@keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0) translateX(-50%)}40%{transform:translateY(-10px) translateX(-50%)}60%{transform:translateY(-5px) translateX(-50%)}}@keyframes slideIndicator{0%,20%,50%,80%,100%{transform:translateX(0)}40%{transform:translateX(10px)}60%{transform:translateX(5px)}}@media screen and (max-width:768px){body{font-size:60px}.list-section{font-size:60px}.nav-dots{right:15px;gap:10px}.nav-dot{width:10px;height:10px}.theme-toggle{top:15px;left:15px;width:50px;height:25px}.hr-line{height:4px!important;margin:12px 0!important}}@media screen and (max-width:480px){.hr-line{height:6px!important;margin:15px 0!important;box-shadow:0 1px 2px rgba(0,0,0,0.2)!important}.light-mode .hr-line{box-shadow:0 1px 2px rgba(0,0,0,0.3)!important}.dark-mode .hr-line{box-shadow:0 1px 2px rgba(255,255,255,0.3)!important}}.hidden{display:none!important}.bookk-font{font-family:var(--font-serif)!important}.game-list-hidden{display:none!important}.wave-section-tight{padding-bottom:2vh!important;margin-bottom:0!important}.first-section canvas,.first-section .three-container{width:100vw!important;max-width:100%!important;overflow-x:visible!important;transform:scale(1.1);transform-origin:center}.first-section{overflow-x:visible!important}</style>
+</head>
+<body class=light-mode>
+<div class=custom-cursor id=customCursor></div>
+<div class=theme-toggle id=themeToggle></div>
+<div class=nav-dots>
+<div class="nav-dot active" data-slide=0></div>
+<div class=nav-dot data-slide=1></div>
+<div class=nav-dot data-slide=2></div>
+<div class=nav-dot data-slide=3></div>
+</div>
+<div class=horizontal-container>
+<div class=slides-wrapper id=slidesWrapper>
+<section class="horizontal-section main-section first-section">
+<div class=wave-container>
+<svg class=wave-svg viewBox="0 0 600 800" xmlns=http://www.w3.org/2000/svg>
+<defs>
+<filter id=waveDistort>
+<feTurbulence baseFrequency="0.02 0.08" numOctaves=6 seed=2 type=fractalNoise>
+<animate attributeName=baseFrequency dur=8s repeatCount=indefinite values="0.02 0.08;0.03 0.09;0.02 0.08"/>
+</feTurbulence>
+<feDisplacementMap in=SourceGraphic scale="30"/>
+</filter>
+<filter id=reflectionDistort>
+<feTurbulence baseFrequency="0.03 0.06" numOctaves=4 seed=5 type=turbulence>
+<animate attributeName=baseFrequency dur=6s repeatCount=indefinite values="0.03 0.06;0.04 0.08;0.03 0.06"/>
+</feTurbulence>
+<feDisplacementMap in=SourceGraphic scale="35"/>
+<feGaussianBlur stdDeviation="0.5"/>
+</filter>
+<linearGradient id=waveGradientLight x1=0 x2=0 y1=0 y2=1>
+<stop offset=0% stop-color=#1E90FF stop-opacity="0.9"/>
+<stop offset=100% stop-color=#1E90FF stop-opacity="0.2"/>
+</linearGradient>
+<linearGradient id=waveGradientDark x1=0 x2=0 y1=0 y2=1>
+<stop offset=0% stop-color=#87CEEB stop-opacity="0.9"/>
+<stop offset=100% stop-color=#87CEEB stop-opacity="0.2"/>
+</linearGradient>
+</defs>
+<rect width=600 height=800 x=0 y=0 fill="transparent"/>
+<text class="main-text wave-text" font-weight=600 id=mainText text-anchor=middle x=50% y=400>WAVE STUDIO</text>
+<g>
+<g filter=url(#reflectionDistort)>
+<text class=wave-reflection font-weight=600 id=reflectionText opacity=0.8 text-anchor=middle transform="scale(1,-1) translate(0,-800)" x=50% y=400>WAVE STUDIO</text>
+</g>
+<g filter=url(#waveDistort) opacity=0.8>
+<path class=wave-path d="M-150,350 Q100,320 300,340 T750,310" fill=none stroke-width=1.2 opacity=0.9>
+<animate attributeName=d dur=3.2s repeatCount=indefinite values="M-150,350 Q100,320 300,340 T750,310;M-200,440 Q250,310 350,330 T800,300;M-50,330 Q200,300 400,320 T850,290;M-100,340 Q150,310 350,330 T800,300;M-150,350 Q100,320 300,340 T750,310"/>
+</path>
+<path class=wave-path d="M800,360 Q600,330 400,350 T0,320" fill=none stroke-width=1.1 opacity=0.85>
+<animate attributeName=d dur=3.7s repeatCount=indefinite values="M800,360 Q600,330 400,350 T0,320;M850,350 Q650,320 450,340 T50,310;M900,340 Q700,310 500,330 T100,300;M850,350 Q650,320 450,340 T50,310;M800,360 Q600,330 400,350 T0,320"/>
+</path>
+<path class=wave-path d="M-100,370 Q100,350 300,370 T700,370" fill=none stroke-width=1 opacity=0.8>
+<animate attributeName=d dur=4s repeatCount=indefinite values="M-100,370 Q100,350 300,370 T700,370;M-50,370 Q150,350 350,370 T750,370;M0,370 Q200,350 400,370 T800,370;M-50,370 Q150,350 350,370 T750,370;M-100,370 Q100,350 300,370 T700,370"/>
+</path>
+<path class=wave-path d="M-200,430 Q0,390 200,410 T600,370" fill=none stroke-width=0.9 opacity=0.7>
+<animate attributeName=d dur=4.3s repeatCount=indefinite values="M-200,430 Q0,390 200,410 T600,370;M-150,420 Q50,380 250,400 T650,360;M-100,410 Q100,370 300,390 T700,350;M-150,420 Q50,380 250,400 T650,360;M-200,430 Q0,390 200,410 T600,370"/>
+</path>
+<path class=wave-path d="M800,440 Q600,400 400,420 T0,380" fill=none stroke-width=0.8 opacity=0.6>
+<animate attributeName=d dur=4.7s repeatCount=indefinite values="M800,440 Q600,400 400,420 T0,380;M850,530 Q750,490 550,510 T50,470;M900,520 Q700,380 600,400 T200,360;M850,500 Q650,390 550,510 T50,470;M800,440 Q600,400 400,420 T0,380"/>
+</path>
+<path class=wave-path d="M-250,480 Q50,450 350,470 T850,440" fill=none stroke-width=0.7 opacity=0.55>
+<animate attributeName=d dur=5.1s repeatCount=indefinite values="M-250,480 Q50,450 350,470 T850,440;M-300,490 Q100,460 400,480 T900,450;M-200,470 Q150,440 450,460 T950,430;M-250,480 Q100,450 400,470 T900,440;M-250,480 Q50,450 350,470 T850,440"/>
+</path>
+<path class=wave-path d="M900,500 Q700,470 500,490 T100,460" fill=none stroke-width=0.6 opacity=0.5>
+<animate attributeName=d dur=5.5s repeatCount=indefinite values="M900,500 Q700,470 500,490 T100,460;M950,510 Q750,480 550,500 T150,470;M1000,490 Q800,460 600,480 T200,450;M950,500 Q750,470 550,490 T150,460;M900,500 Q700,470 500,490 T100,460"/>
+</path>
+<path class=wave-path d="M-150,520 Q200,500 450,515 T900,485" fill=none stroke-width=0.5 opacity=0.45>
+<animate attributeName=d dur=6.2s repeatCount=indefinite values="M-150,520 Q200,500 450,515 T900,485;M-100,530 Q250,510 500,525 T950,495;M-50,510 Q300,490 550,505 T1000,475;M-100,520 Q250,500 500,515 T950,485;M-150,520 Q200,500 450,515 T900,485"/>
+</path>
+<path class=wave-path d="M950,540 Q750,520 550,535 T150,505" fill=none stroke-width=0.4 opacity=0.4>
+<animate attributeName=d dur=6.8s repeatCount=indefinite values="M950,540 Q750,520 550,535 T150,505;M1000,550 Q800,530 600,545 T200,515;M1050,530 Q850,510 650,525 T250,495;M1000,540 Q800,520 600,535 T200,505;M950,540 Q750,520 550,535 T150,505"/>
+</path>
+<path class=wave-path d="M-80,560 Q120,545 320,555 T720,540" fill=none stroke-width=0.3 opacity=0.35>
+<animate attributeName=d dur=7.3s repeatCount=indefinite values="M-80,560 Q120,545 320,555 T720,540;M-30,570 Q170,555 370,565 T770,550;M20,550 Q220,535 420,545 T820,530;M-30,560 Q170,545 370,555 T770,540;M-80,560 Q120,545 320,555 T720,540"/>
+</path>
+<path class=wave-path d="M800,570 Q600,555 400,565 T0,550" fill=none stroke-width=0.25 opacity=0.3>
+<animate attributeName=d dur=7.9s repeatCount=indefinite values="M800,570 Q600,555 400,565 T0,550;M850,580 Q650,565 450,575 T50,560;M900,560 Q700,545 500,555 T100,540;M850,570 Q650,555 450,565 T50,550;M800,570 Q600,555 400,565 T0,550"/>
+</path>
+<path class=wave-path d="M-200,590 Q100,580 400,585 T800,575" fill=none stroke-width=0.2 opacity=0.25>
+<animate attributeName=d dur=8.7s repeatCount=indefinite values="M-200,590 Q100,580 400,585 T800,575;M-150,595 Q150,585 450,590 T850,580;M-100,585 Q200,575 500,580 T900,570;M-150,590 Q150,580 450,585 T850,575;M-200,590 Q100,580 400,585 T800,575"/>
+</path>
+<path class=wave-path d="M900,600 Q700,590 500,595 T100,585" fill=none stroke-width=0.15 opacity=0.2>
+<animate attributeName=d dur=9.4s repeatCount=indefinite values="M900,600 Q700,590 500,595 T100,585;M950,605 Q750,595 550,600 T150,590;M1000,595 Q800,585 600,590 T200,580;M950,600 Q750,590 550,595 T150,585;M900,600 Q700,590 500,595 T100,585"/>
+</path>
+<path class=wave-path d="M-50,610 Q250,605 550,608 T950,602" fill=none stroke-width=0.1 opacity=0.15>
+<animate attributeName=d dur=10.2s repeatCount=indefinite values="M-50,610 Q250,605 550,608 T950,602;M0,612 Q300,607 600,610 T1000,604;M50,608 Q350,603 650,606 T1050,600;M0,610 Q300,605 600,608 T1000,602;M-50,610 Q250,605 550,608 T950,602"/>
+</path>
+</g>
+</g>
+</svg>
+</div>
+<div class=slide-indicator>
+<i>→</i>
+<span>Slide Right</span>
+</div>
+</section>
+<section class="horizontal-section sphere-section">
+<canvas id=canvas></canvas>
+<div class=slide-indicator>
+<i>→</i>
+<span>Next</span>
+</div>
+<div class=type-layout>
+<div class=big-words>
+<span style="font-family:'BookkMyungjo-Bd',serif;font-weight:700">너만의</span>
+<span style="font-family:'BookkMyungjo-Bd',serif;font-weight:700">파동을</span>
+<span style="font-family:'BookkMyungjo-Bd',serif;font-weight:700">일으켜</span>
+</div>
+<div class=round-word>on</div>
+<div class=quote>
+"Click the sphere to interact<br/>and feel the ripple."
+</div>
+</div>
+</section>
+<section class="horizontal-section wave-section wave-section-tight">
+<div id=wave-cursor></div>
+<canvas id=wave-canvas></canvas>
+<div class=scroll-indicator>
+<i>↓</i>
+<span>Scroll Down</span>
+</div>
+</section>
+</div>
+</div>
+<section class="vertical-section list-section">
+<header class=header>
+<div class="fixed top-left">2025</div>
+<div class="fixed top-right">
+<span class=header-english>WAVE STUDIO GAME LIST</span>
+<span class=header-korean>웨이브 스튜디오 게임 목록</span>
+</div>
+</header>
+<div class=marquee-container>
+<canvas class=marquee-canvas data-icon=11 data-korean="감정의 물결" data-text="WAVE OF EMOTION" data-url="1 wave of emotion.html"></canvas>
+<div class=hr-line></div>
+<canvas class=marquee-canvas data-icon=22 data-korean="심연 속 물결" data-text="RIPPLES IN THE ABYSS" data-url="2 circle land.html"></canvas>
+<div class=hr-line></div>
+<canvas class=marquee-canvas data-icon=33 data-korean="클릭 파동" data-text="CLICK WAVE" data-url="3 click wave.html"></canvas>
+<div class=hr-line></div>
+<canvas class=marquee-canvas data-icon=44 data-korean="방울 방울" data-text="BUBBLE BUBBLE" data-url="4 bubble.html"></canvas>
+<div class=hr-line></div>
+<canvas class=marquee-canvas data-icon=55 data-korean="2D 물결" data-text="2D WAVE" data-url="5 two mode.html"></canvas>
+<div class=hr-line></div>
+<canvas class=marquee-canvas data-icon=77 data-korean="타자기로 쓴" data-text=TYPEWRITTEN data-url="6 text game.html"></canvas>
+<div class=hr-line></div>
+<canvas class=marquee-canvas data-icon=gh data-korean=굿즈 data-text=ITEMS data-url=layer.html></canvas>
+<div class=hr-line></div>
+</div>
+</section>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js></script>
+<script>const Utils={throttle(func,limit){let inThrottle;return function(){const args=arguments;const context=this;if(!inThrottle){func.apply(context,args);inThrottle=true;setTimeout(()=>inThrottle=false,limit);}}},debounce(func,wait){let timeout;return function executedFunction(...args){const later=()=>{clearTimeout(timeout);func(...args);};clearTimeout(timeout);timeout=setTimeout(later,wait);};}};class CustomCursor{constructor(){this.cursor=document.getElementById('customCursor');this.mouseX=window.innerWidth/2;this.mouseY=window.innerHeight/2;this.isClicking=false;this.imageLoaded=false;this.preloadCursorImage();this.init();}
+preloadCursorImage(){const img=new Image();img.onload=()=>{this.imageLoaded=true;if(this.cursor){this.cursor.classList.add('image-loaded');this.cursor.style.backgroundImage=`url("${img.src}")`;this.cursor.style.opacity='1';}};img.onerror=()=>{document.body.style.cursor='auto';if(this.cursor){this.cursor.style.display='none';}};img.src=`image/mou.png?v=${Date.now()}`;}
+init(){if(!this.cursor){return;}
+this.updateCursorPosition();document.addEventListener('mousemove',(e)=>{this.mouseX=e.clientX;this.mouseY=e.clientY;this.updateCursorPosition();});document.addEventListener('mousedown',()=>{this.isClicking=true;this.cursor.classList.add('clicking');});document.addEventListener('mouseup',()=>{this.isClicking=false;this.cursor.classList.remove('clicking');});document.addEventListener('mouseenter',(e)=>{if(this.isHoverTarget(e.target)){if(!this.isClicking){this.cursor.classList.add('hovering');}}},true);document.addEventListener('mouseleave',(e)=>{if(this.isHoverTarget(e.target)){this.cursor.classList.remove('hovering');}},true);window.addEventListener('blur',()=>{if(this.imageLoaded){this.cursor.style.opacity='0';}});window.addEventListener('focus',()=>{if(this.imageLoaded){this.cursor.style.opacity='1';}});document.addEventListener('mouseleave',()=>{if(this.imageLoaded){this.cursor.style.opacity='0';}});document.addEventListener('mouseenter',()=>{if(this.imageLoaded){this.cursor.style.opacity='1';}});}
+isHoverTarget(element){if(!element||!element.classList)return false;const targetClasses=['nav-dot','theme-toggle','marquee-canvas','scroll-indicator','slide-indicator'];const targetTags=['A','BUTTON'];for(let className of targetClasses){if(element.classList.contains(className)){return true;}}
+if(element.tagName&&targetTags.includes(element.tagName.toUpperCase())){return true;}
+return false;}
+updateCursorPosition(){if(this.cursor&&this.imageLoaded){this.cursor.style.left=`${this.mouseX}px`;this.cursor.style.top=`${this.mouseY}px`;}}}
+class AppState{constructor(){this.isDarkMode=false;this.currentSlide=0;this.totalSlides=3;this.isInVerticalSection=false;this.lastScrollTime=0;this.scrollThreshold=300;this.isTransitioning=false;this.transitionTimeout=null;this.init();}
+init(){this.bindEvents();this.initTheme();this.initNavigation();this.hideVerticalSection();}
+hideVerticalSection(){const verticalSection=document.querySelector('.vertical-section');const horizontalContainer=document.querySelector('.horizontal-container');if(verticalSection){verticalSection.classList.remove('visible');this.isInVerticalSection=false;}
+if(horizontalContainer){horizontalContainer.classList.remove('hidden');}
+this.updateNavigation();}
+showVerticalSection(){if(this.isTransitioning)return;this.isTransitioning=true;if(this.transitionTimeout){clearTimeout(this.transitionTimeout);this.transitionTimeout=null;}
+const verticalSection=document.querySelector('.vertical-section');const horizontalContainer=document.querySelector('.horizontal-container');if(verticalSection&&horizontalContainer){horizontalContainer.classList.add('hidden');setTimeout(()=>{verticalSection.classList.add('visible');this.isInVerticalSection=true;this.updateNavigation();this.transitionTimeout=setTimeout(()=>{this.isTransitioning=false;},1000);},200);}}
+bindEvents(){document.getElementById('themeToggle')?.addEventListener('click',()=>this.toggleTheme());document.querySelectorAll('.nav-dot').forEach((dot,index)=>{dot.addEventListener('click',()=>this.goToSlide(index));});document.querySelector('.scroll-indicator')?.addEventListener('click',()=>this.scrollToVertical());window.addEventListener('resize',()=>this.handleResize());window.addEventListener('wheel',(e)=>this.handleWheel(e),{passive:false});this.initTouchEvents();window.addEventListener('keydown',(e)=>this.handleKeydown(e));}
+initTouchEvents(){let startX=0,startY=0;window.addEventListener('touchstart',(e)=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;});window.addEventListener('touchend',(e)=>{if(this.isTransitioning)return;const endX=e.changedTouches[0].clientX;const endY=e.changedTouches[0].clientY;const diffX=startX-endX;const diffY=startY-endY;if(Math.abs(diffX)>Math.abs(diffY)&&Math.abs(diffX)>50){if(diffX>0&&this.currentSlide<this.totalSlides-1&&!this.isInVerticalSection){this.nextSlide();}else if(diffX<0&&this.currentSlide>0&&!this.isInVerticalSection){this.prevSlide();}}else if(Math.abs(diffY)>50&&diffY>0&&this.currentSlide===this.totalSlides-1&&!this.isInVerticalSection){this.scrollToVertical();}});}
+handleKeydown(e){if(this.isTransitioning)return;switch(e.key){case'ArrowRight':if(this.currentSlide<this.totalSlides-1&&!this.isInVerticalSection){this.nextSlide();}
+break;case'ArrowLeft':if(this.currentSlide>0&&!this.isInVerticalSection){this.prevSlide();}else if(this.isInVerticalSection){this.scrollToHorizontal();}
+break;case'ArrowDown':if(this.currentSlide===this.totalSlides-1&&!this.isInVerticalSection){this.scrollToVertical();}
+break;case'ArrowUp':case'Escape':if(this.isInVerticalSection){this.scrollToHorizontal();}
+break;}}
+handleWheel(event){if(this.isTransitioning)return;const now=Date.now();if(now-this.lastScrollTime<this.scrollThreshold)return;event.preventDefault();if(!this.isInVerticalSection){if(event.deltaX>0||event.deltaY>0){if(this.currentSlide<this.totalSlides-1){this.nextSlide();this.lastScrollTime=now;}else if(this.currentSlide===this.totalSlides-1){this.scrollToVertical();this.lastScrollTime=now;}}else if(event.deltaX<0||event.deltaY<0){if(this.currentSlide>0){this.prevSlide();this.lastScrollTime=now;}}}else{if(event.deltaY<0){this.scrollToHorizontal();this.lastScrollTime=now;}}}
+nextSlide(){if(this.currentSlide<this.totalSlides-1&&!this.isTransitioning&&!this.isInVerticalSection){this.isTransitioning=true;if(this.transitionTimeout){clearTimeout(this.transitionTimeout);this.transitionTimeout=null;}
+this.currentSlide++;this.updateSlidePosition();this.updateNavigation();this.transitionTimeout=setTimeout(()=>{this.isTransitioning=false;},800);}}
+prevSlide(){if(this.currentSlide>0&&!this.isTransitioning&&!this.isInVerticalSection){this.isTransitioning=true;if(this.transitionTimeout){clearTimeout(this.transitionTimeout);this.transitionTimeout=null;}
+this.currentSlide--;this.updateSlidePosition();this.updateNavigation();this.transitionTimeout=setTimeout(()=>{this.isTransitioning=false;},800);}}
+goToSlide(index){if(this.isTransitioning)return;if(index<3){this.isTransitioning=true;if(this.transitionTimeout){clearTimeout(this.transitionTimeout);this.transitionTimeout=null;}
+this.currentSlide=index;this.updateSlidePosition();this.updateNavigation();this.scrollToHorizontal();this.transitionTimeout=setTimeout(()=>{this.isTransitioning=false;},800);}else if(index===3){this.scrollToVertical();}}
+updateSlidePosition(){const slidesWrapper=document.getElementById('slidesWrapper');if(slidesWrapper){const translateX=-this.currentSlide*100;slidesWrapper.style.transform=`translateX(${translateX}vw)`;}}
+updateNavigation(){const dots=document.querySelectorAll('.nav-dot');dots.forEach((dot,index)=>{dot.classList.remove('active');if(index===this.currentSlide&&!this.isInVerticalSection){dot.classList.add('active');}else if(index===3&&this.isInVerticalSection){dot.classList.add('active');}});}
+scrollToVertical(){if(this.isTransitioning||this.isInVerticalSection)return;if(this.currentSlide===this.totalSlides-1){this.showVerticalSection();}}
+scrollToHorizontal(){if(this.isTransitioning||!this.isInVerticalSection)return;this.isTransitioning=true;if(this.transitionTimeout){clearTimeout(this.transitionTimeout);this.transitionTimeout=null;}
+const verticalSection=document.querySelector('.vertical-section');const horizontalContainer=document.querySelector('.horizontal-container');if(verticalSection&&horizontalContainer){verticalSection.classList.remove('visible');setTimeout(()=>{horizontalContainer.classList.remove('hidden');this.isInVerticalSection=false;this.updateNavigation();this.transitionTimeout=setTimeout(()=>{this.isTransitioning=false;},1000);},200);}}
+initTheme(){const body=document.body;if(this.isDarkMode){body.classList.add('dark-mode');body.classList.remove('light-mode');}else{body.classList.add('light-mode');body.classList.remove('dark-mode');}}
+initNavigation(){this.updateNavigation();}
+toggleTheme(){this.isDarkMode=!this.isDarkMode;const body=document.body;if(this.isDarkMode){body.classList.remove('light-mode');body.classList.add('dark-mode');}else{body.classList.remove('dark-mode');body.classList.add('light-mode');}
+this.updateAnimationThemes();this.updateCanvasElements();}
+updateAnimationThemes(){if(window.updateSphereTheme){window.updateSphereTheme(this.isDarkMode);}
+if(window.updateWaveTheme){window.updateWaveTheme(this.isDarkMode);}}
+updateCanvasElements(){if(window.marqueeRenderers){window.marqueeRenderers.forEach(renderer=>{renderer.updateTheme(this.isDarkMode);});}}
+handleResize(){if(window.sphereRenderer&&window.sphereCamera){const camera=window.sphereCamera;const renderer=window.sphereRenderer;camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);}
+if(window.waveRenderer&&window.waveCamera){const camera=window.waveCamera;const renderer=window.waveRenderer;camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);}
+if(window.marqueeRenderers){window.marqueeRenderers.forEach(renderer=>{renderer.resize();});}}}
+class MarqueeCanvasRenderer{constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.text=canvas.dataset.text||'';this.koreanText=canvas.dataset.korean||'';this.url=canvas.dataset.url||'';this.iconName=canvas.dataset.icon||'';this.isDarkMode=false;this.showKorean=false;this.animationOffset=0;this.animationSpeed=1;this.images={dark:null,light:null};this.init();}
+init(){this.resize();this.loadImages();this.bindEvents();this.animate();this.canvas.style.cursor='pointer';}
+loadImages(){if(this.iconName){const darkImg=new Image();darkImg.onerror=()=>{console.warn(`Failed to load dark image:image/${this.iconName}.png`);};darkImg.onload=()=>{this.images.dark=darkImg;this.render();};darkImg.src=`image/${this.iconName}.png`;const lightImg=new Image();lightImg.onerror=()=>{console.warn(`Failed to load light image:imagew/${this.iconName}.png`);};lightImg.onload=()=>{this.images.light=lightImg;this.render();};lightImg.src=`imagew/${this.iconName}.png`;}}
+bindEvents(){this.canvas.addEventListener('mouseenter',()=>{this.showKorean=true;this.render();});this.canvas.addEventListener('mouseleave',()=>{this.showKorean=false;this.render();});this.canvas.addEventListener('click',()=>{if(this.url){window.location.href=this.url;}});}
+resize(){try{const rect=this.canvas.getBoundingClientRect();const dpr=window.devicePixelRatio||1;if(rect.width<=0||rect.height<=0)return;this.canvas.width=rect.width*dpr;this.canvas.height=rect.height*dpr;this.ctx.scale(dpr,dpr);this.canvas.style.width=rect.width+'px';this.canvas.style.height=rect.height+'px';}catch(error){console.warn('Resize error:',error);}}
+updateTheme(isDarkMode){this.isDarkMode=isDarkMode;this.render();}
+render(){try{const ctx=this.ctx;const width=this.canvas.clientWidth;const height=this.canvas.clientHeight;if(!width||!height)return;ctx.clearRect(0,0,width,height);const textColor=this.isDarkMode?'#ffffff':'#000000';ctx.font='100px pretendard, sans-serif';ctx.fillStyle=textColor;ctx.textBaseline='middle';const currentText=this.showKorean?this.koreanText:this.text;const currentImage=this.isDarkMode?this.images.dark:this.images.light;if(!currentText)return;const textMetrics=ctx.measureText(currentText);const textWidth=textMetrics.width;const imageWidth=80;const spacing=20;const singlePattern=spacing+textWidth+imageWidth+spacing;const fullPatternWidth=singlePattern*8;const patternRepetitions=Math.ceil((width*2)/fullPatternWidth)+1;const offsetX=-((this.animationOffset*this.animationSpeed)%fullPatternWidth);for(let p=0;p<patternRepetitions;p++){const patternX=offsetX+(p*fullPatternWidth);for(let i=0;i<8;i++){const x=patternX+(i*singlePattern);ctx.fillText(currentText,x,height/2);if(currentImage&&currentImage.complete){const imgX=x+textWidth+spacing;const imgY=(height-imageWidth)/2;try{ctx.drawImage(currentImage,imgX,imgY,imageWidth,imageWidth);}catch(e){console.warn('Failed to draw image:',e);}}}}}catch(error){console.warn('Render error:',error);}}
+animate(){this.animationOffset+=0.5;this.render();requestAnimationFrame(()=>this.animate());}}
+class SphereAnimation{constructor(){this.canvas=document.getElementById('canvas');if(!this.canvas)return;this.initRenderer();this.initScene();this.initLights();this.createSphere();this.bindEvents();this.animate();window.sphereRenderer=this.renderer;window.sphereCamera=this.camera;window.updateSphereTheme=(isDarkMode)=>this.updateTheme(isDarkMode);}
+initRenderer(){this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true,alpha:true,powerPreference:"high-performance",precision:"highp"});this.renderer.setSize(window.innerWidth,window.innerHeight);this.renderer.setPixelRatio(Math.min(window.devicePixelRatio*1.5,3));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
+initScene(){this.scene=new THREE.Scene();this.camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);this.camera.position.z=4;}
+initLights(){this.primaryLight=new THREE.DirectionalLight(0x1E90FF,1.5);this.primaryLight.position.set(1,1,1);this.scene.add(this.primaryLight);const light2=new THREE.DirectionalLight(0x1E90FF,0.4);light2.position.set(-1,-1,1);this.scene.add(light2);this.scene.add(new THREE.AmbientLight(0xffffff,0.2));}
+createSphere(){const radius=1.5;const resolution=500;this.geometry=new THREE.SphereGeometry(radius,resolution,resolution);this.pointsMaterial=new THREE.PointsMaterial({color:0x0077FF,size:0.005,transparent:true,opacity:1.0,sizeAttenuation:true,blending:THREE.AdditiveBlending,vertexColors:false});this.pointCloud=new THREE.Points(this.geometry,this.pointsMaterial);this.scene.add(this.pointCloud);this.originalPositions=this.geometry.attributes.position.array.slice();this.vertexCount=this.originalPositions.length/3;this.waves=[];this.maxWaves=15;this.waveRadius=0.15;this.isDragging=false;this.previousPosition={x:0,y:0};}
+bindEvents(){this.canvas.addEventListener('mousedown',(e)=>this.onMouseDown(e));this.canvas.addEventListener('mousemove',(e)=>this.onMouseMove(e));this.canvas.addEventListener('mouseup',()=>this.onMouseUp());this.canvas.addEventListener('mouseleave',()=>this.onMouseUp());this.canvas.addEventListener('touchstart',(e)=>this.onTouchStart(e));this.canvas.addEventListener('touchmove',(e)=>this.onTouchMove(e));this.canvas.addEventListener('touchend',(e)=>this.onTouchEnd(e));}
+onMouseDown(event){this.isDragging=true;this.previousPosition={x:event.clientX,y:event.clientY};this.createWave(event.clientX,event.clientY);}
+onMouseMove(event){if(this.isDragging){const deltaX=event.clientX-this.previousPosition.x;const deltaY=event.clientY-this.previousPosition.y;const distance=Math.sqrt(deltaX*deltaX+deltaY*deltaY);if(distance>20){this.createWave(event.clientX,event.clientY);this.previousPosition={x:event.clientX,y:event.clientY};}
+this.pointCloud.rotation.y+=deltaX*0.005;this.pointCloud.rotation.x+=deltaY*0.005;}}
+onMouseUp(){this.isDragging=false;}
+onTouchStart(event){event.preventDefault();this.isDragging=true;const touch=event.touches[0];this.previousPosition={x:touch.clientX,y:touch.clientY};this.createWave(touch.clientX,touch.clientY);}
+onTouchMove(event){if(this.isDragging){event.preventDefault();const touch=event.touches[0];const deltaX=touch.clientX-this.previousPosition.x;const deltaY=touch.clientY-this.previousPosition.y;const distance=Math.sqrt(deltaX*deltaX+deltaY*deltaY);if(distance>20){this.createWave(touch.clientX,touch.clientY);this.previousPosition={x:touch.clientX,y:touch.clientY};}
+this.pointCloud.rotation.y+=deltaX*0.005;this.pointCloud.rotation.x+=deltaY*0.005;}}
+onTouchEnd(event){event.preventDefault();this.isDragging=false;}
+createWave(x,y){const vector=new THREE.Vector3();const raycaster=new THREE.Raycaster();vector.set((x/window.innerWidth)*2-1,-(y/window.innerHeight)*2+1,0.5);vector.unproject(this.camera);raycaster.set(this.camera.position,vector.sub(this.camera.position).normalize());const intersects=raycaster.intersectObject(this.pointCloud);if(intersects.length>0){const point=intersects[0].point.clone();this.waves.push({center:point,intensity:0.5,speed:0.03,decay:0.97,maxRadius:3,currentRadius:0.1});if(this.waves.length>this.maxWaves){this.waves.shift();}}}
+updateWaves(){const positions=this.geometry.attributes.position.array;for(let i=0;i<positions.length;i++){positions[i]=this.originalPositions[i];}
+for(let w=0;w<this.waves.length;w++){const wave=this.waves[w];for(let i=0;i<this.vertexCount;i++){const vertexIndex=i*3;const vx=positions[vertexIndex];const vy=positions[vertexIndex+1];const vz=positions[vertexIndex+2];const vertex=new THREE.Vector3(vx,vy,vz);const distance=vertex.distanceTo(wave.center);if(distance>wave.currentRadius-this.waveRadius&&distance<wave.currentRadius+this.waveRadius){const offset=Math.cos((distance-wave.currentRadius)/this.waveRadius*Math.PI)*wave.intensity;const direction=new THREE.Vector3(vx,vy,vz).normalize();positions[vertexIndex]+=direction.x*offset;positions[vertexIndex+1]+=direction.y*offset;positions[vertexIndex+2]+=direction.z*offset;}}
+wave.currentRadius+=wave.speed;wave.intensity*=wave.decay;if(wave.intensity<0.01||wave.currentRadius>wave.maxRadius){this.waves.splice(w,1);w--;}}
+if(Math.random()<0.02&&this.waves.length<this.maxWaves/2){const phi=Math.random()*Math.PI*2;const theta=Math.random()*Math.PI;const radius=1.5;const x=radius*Math.sin(theta)*Math.cos(phi);const y=radius*Math.sin(theta)*Math.sin(phi);const z=radius*Math.cos(theta);this.waves.push({center:new THREE.Vector3(x,y,z),intensity:0.2,speed:0.02,decay:0.98,maxRadius:3,currentRadius:0.1});}
+this.geometry.attributes.position.needsUpdate=true;}
+updateTheme(isDarkMode){const color=isDarkMode?0x87CEEB:0x1E90FF;if(this.pointsMaterial){this.pointsMaterial.color.set(color);}
+if(this.primaryLight){this.primaryLight.color.set(color);}}
+autoRotate(){if(!this.isDragging){this.pointCloud.rotation.y+=0.001;this.pointCloud.rotation.x+=0.0005;}}
+animate(){requestAnimationFrame(()=>this.animate());this.updateWaves();this.autoRotate();this.renderer.render(this.scene,this.camera);}}
+class WaveAnimation{constructor(){this.canvas=document.getElementById('wave-canvas');if(!this.canvas)return;this.initRenderer();this.initScene();this.initVariables();this.createPointCloud();this.bindEvents();this.initCursor();this.animate();window.waveRenderer=this.renderer;window.waveCamera=this.camera;window.updateWaveTheme=(isDarkMode)=>this.updateTheme(isDarkMode);}
+initRenderer(){this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,canvas:this.canvas,powerPreference:"high-performance",precision:"highp"});this.renderer.setSize(window.innerWidth,window.innerHeight);this.renderer.setPixelRatio(Math.min(window.devicePixelRatio*1.5,3));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
+initScene(){this.scene=new THREE.Scene();this.camera=new THREE.PerspectiveCamera(65,window.innerWidth/window.innerHeight,0.1,1000);this.camera.position.set(0,150,300);this.camera.lookAt(0,0,0);}
+initVariables(){this.time=0;this.waves=[];this.maxWaves=5;this.lastAutoWaveTime=0;this.isDarkMode=false;this.lightModeColor=new THREE.Color(0x1E90FF);this.darkModeColor=new THREE.Color(0x87CEEB);}
+createPointCloud(){const geometry=new THREE.BufferGeometry();const count=45000;const positions=new Float32Array(count*3);const colors=new Float32Array(count*3);const sizes=new Float32Array(count);const noise=new Float32Array(count);const radius=200;for(let i=0;i<count;i++){const angle=Math.random()*Math.PI*2;const radiusVariance=Math.pow(Math.random(),1.3);let r;const random=Math.random();if(random>0.85){r=(radiusVariance*radius)+(Math.random()*40);}else if(random>0.7){const baseRadius=radiusVariance*radius;const edgeFactor=Math.pow(baseRadius/radius,3);r=baseRadius+(Math.random()*25-10)*edgeFactor;}else{r=radiusVariance*radius;}
+const x=r*Math.cos(angle);const z=r*Math.sin(angle);const distFromCenter=Math.sqrt(x*x+z*z);const normalizedDist=distFromCenter/radius;const baseY=(normalizedDist*normalizedDist*8)-2;const naturalVariation=(Math.random()*2-1)*1.5;const y=baseY+naturalVariation;positions[i*3]=isFinite(x)?x:0;positions[i*3+1]=isFinite(y)?y:0;positions[i*3+2]=isFinite(z)?z:0;noise[i]=Math.random();const edgeFactor=r/radius;sizes[i]=edgeFactor>0.85?0.3+Math.random()*0.6:0.25+Math.random()*0.4;colors[i*3]=0;colors[i*3+1]=0;colors[i*3+2]=0;}
+geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));geometry.setAttribute('size',new THREE.BufferAttribute(sizes,1));this.noiseValues=noise;const material=new THREE.PointsMaterial({size:0.6,vertexColors:true,blending:THREE.AdditiveBlending,transparent:true,sizeAttenuation:true,depthWrite:false});this.pointCloud=new THREE.Points(geometry,material);this.scene.add(this.pointCloud);this.originalPositions=positions.slice();this.pointSizes=sizes;this.updatePointCloudColors();}
+updatePointCloudColors(){const colors=this.pointCloud.geometry.attributes.color.array;const count=colors.length/3;for(let i=0;i<count;i++){const baseColor=this.isDarkMode?this.darkModeColor:this.lightModeColor;const distanceRatio=Math.sqrt(Math.pow(this.originalPositions[i*3],2)+
+Math.pow(this.originalPositions[i*3+2],2))/200;const depthVariance=0.08*this.noiseValues[i];let baseIntensity=distanceRatio>0.85?0.6+0.5*(1-Math.min(1,distanceRatio))+depthVariance:0.5+0.5*(1-Math.min(1,distanceRatio))+depthVariance;colors[i*3]=baseColor.r*baseIntensity;colors[i*3+1]=baseColor.g*baseIntensity;colors[i*3+2]=baseColor.b*baseIntensity;}
+this.pointCloud.geometry.attributes.color.needsUpdate=true;}
+updateTheme(isDarkMode){this.isDarkMode=isDarkMode;this.updatePointCloudColors();}
+bindEvents(){window.addEventListener('mousemove',(event)=>{this.mouseX=event.clientX;this.mouseY=event.clientY;if(this.cursor){this.cursor.style.left=`${this.mouseX}px`;this.cursor.style.top=`${this.mouseY}px`;}
+if(Math.random()<0.03){const mouseX=(event.clientX/window.innerWidth)*2-1;const mouseY=-(event.clientY/window.innerHeight)*2+1;this.createSubtleWave(mouseX,mouseY);}});window.addEventListener('click',(event)=>{const waveSection=document.querySelector('.wave-section');const rect=waveSection?.getBoundingClientRect();if(rect&&event.clientX>=rect.left&&event.clientX<=rect.right&&event.clientY>=rect.top&&event.clientY<=rect.bottom){const mouseX=(event.clientX/window.innerWidth)*2-1;const mouseY=-(event.clientY/window.innerHeight)*2+1;this.createWave(mouseX,mouseY,true);if(this.cursor){this.cursor.style.width='30px';this.cursor.style.height='30px';setTimeout(()=>{this.cursor.style.width='14px';this.cursor.style.height='14px';},200);}}});}
+initCursor(){this.cursor=document.getElementById('wave-cursor');this.mouseX=0;this.mouseY=0;}
+createSubtleWave(normalizedX,normalizedY){if(this.waves.length>=this.maxWaves)this.waves.shift();this.waves.push({x:normalizedX*200,z:normalizedY*200,time:0,maxTime:45+Math.random()*10,intensity:3+Math.random()*2,speed:2.5+Math.random()*1,width:12+Math.random()*5,frequencies:[{freq:1,amp:1},{freq:2,amp:0.2}],type:'subtle'});}
+createWave(normalizedX,normalizedY,isUserClick=false){if(this.waves.length>=this.maxWaves){const subtleIndex=this.waves.findIndex(w=>w.type==='subtle');if(subtleIndex>=0)this.waves.splice(subtleIndex,1);else this.waves.shift();}
+this.waves.push({x:normalizedX*200,z:normalizedY*200,time:0,maxTime:isUserClick?130+Math.random()*40:80+Math.random()*30,intensity:isUserClick?20+Math.random()*8:12+Math.random()*5,speed:isUserClick?3+Math.random()*1.5:2+Math.random()*1.2,width:isUserClick?30+Math.random()*15:20+Math.random()*10,frequencies:[{freq:1,amp:1},{freq:1.8+Math.random()*0.4,amp:0.4+Math.random()*0.2},{freq:3.2+Math.random()*0.6,amp:0.2+Math.random()*0.1}],damping:0.92+Math.random()*0.06,type:isUserClick?'click':'auto'});}
+updateWaves(){const positions=this.pointCloud.geometry.attributes.position.array;const sizes=this.pointCloud.geometry.attributes.size.array;for(let i=0,j=0;i<positions.length;i+=3,j++){const originalX=this.originalPositions[i];const originalZ=this.originalPositions[i+2];const originalY=this.originalPositions[i+1];const distFromCenter=Math.sqrt(originalX*originalX+originalZ*originalZ);const normalizedDist=distFromCenter/200;const noiseValue=this.noiseValues[j];const primaryWave=Math.sin((this.time*0.02)+(normalizedDist*3)+(noiseValue*5))*3.5;const secondaryWave=Math.sin((this.time*0.1)+(originalX*0.02)+(originalZ*0.02))*1.8;const tertiaryWave=Math.sin((this.time*0.1)+(noiseValue*10))*0.8;const edgeFactor=Math.max(0,1-Math.pow(normalizedDist,2));const combinedWaves=(primaryWave+secondaryWave+tertiaryWave)*edgeFactor;const newY=originalY+(isFinite(combinedWaves)?combinedWaves:0);positions[i+1]=isFinite(newY)?newY:originalY;const heightRatio=(isFinite(combinedWaves)?combinedWaves+3.5:0)/7;const newSize=this.pointSizes[j]*(0.8+0.4*(isFinite(heightRatio)?heightRatio:0));sizes[j]=isFinite(newSize)?newSize:this.pointSizes[j];}
+if(this.time-this.lastAutoWaveTime>80+Math.random()*40){const angle=Math.random()*Math.PI*2;const distance=Math.random()*0.8;const x=Math.cos(angle)*distance;const y=Math.sin(angle)*distance;this.createWave(x,y,false);this.lastAutoWaveTime=this.time;}
+this.waves.forEach((wave,index)=>{wave.time++;if(wave.time>wave.maxTime){this.waves.splice(index,1);return;}
+for(let i=0,j=0;i<positions.length;i+=3,j++){const originalX=this.originalPositions[i];const originalZ=this.originalPositions[i+2];const dx=originalX-wave.x;const dz=originalZ-wave.z;const distance=Math.sqrt(dx*dx+dz*dz);const timeRatio=wave.time/wave.maxTime;const waveRadius=wave.time*wave.speed;const distanceFactor=Math.abs(distance-waveRadius);const waveFalloff=Math.max(0,1-distanceFactor/wave.width);const waveIntensity=wave.intensity*Math.pow(1-timeRatio,1.2);let waveHeight=0;wave.frequencies.forEach(freq=>{const phase=waveFalloff*Math.PI*freq.freq;waveHeight+=Math.sin(phase)*freq.amp;});waveHeight*=waveIntensity*Math.pow(waveFalloff,1.2)*wave.damping;if(isFinite(waveHeight)){positions[i+1]+=waveHeight;}
+if(wave.type==='click'&&waveHeight>0.5){const sizeFactor=Math.abs(waveHeight)*0.06;if(isFinite(sizeFactor)){sizes[j]+=this.pointSizes[j]*sizeFactor;}}}});this.pointCloud.geometry.attributes.position.needsUpdate=true;this.pointCloud.geometry.attributes.size.needsUpdate=true;}
+animate(){requestAnimationFrame(()=>this.animate());const timeIncrement=0.5+(isFinite(0.1*Math.sin(this.time*0.001))?0.1*Math.sin(this.time*0.001):0);this.time+=timeIncrement;this.updateWaves();const naturalTime=this.time*0.003;const cameraRadius=300+Math.sin(naturalTime*0.5)*15;this.camera.position.x=isFinite(cameraRadius*Math.sin(naturalTime))?cameraRadius*Math.sin(naturalTime):300;this.camera.position.z=isFinite(cameraRadius*Math.cos(naturalTime))?cameraRadius*Math.cos(naturalTime):300;this.camera.position.y=isFinite(150+Math.sin(naturalTime*1.3)*8+Math.sin(naturalTime*2.1)*4)?150+Math.sin(naturalTime*1.3)*8+Math.sin(naturalTime*2.1)*4:150;const lookAtX=isFinite(Math.sin(naturalTime*0.7)*10)?Math.sin(naturalTime*0.7)*10:0;const lookAtY=isFinite(Math.sin(naturalTime*0.5)*5)?Math.sin(naturalTime*0.5)*5:0;const lookAtZ=isFinite(Math.cos(naturalTime*0.6)*10)?Math.cos(naturalTime*0.6)*10:0;this.camera.lookAt(lookAtX,lookAtY,lookAtZ);this.renderer.render(this.scene,this.camera);}}
+class Application{constructor(){this.init();}
+init(){if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',()=>this.start());}else{this.start();}}
+start(){try{this.customCursor=new CustomCursor();this.appState=new AppState();this.initMarqueeRenderers();this.initAnimations();this.initScrollBehavior();this.preloadAssets();console.log('Wave Studio initialized successfully');}catch(error){console.error('Failed to initialize Wave Studio:',error);}}
+initMarqueeRenderers(){window.marqueeRenderers=[];document.querySelectorAll('.marquee-canvas').forEach(canvas=>{try{const renderer=new MarqueeCanvasRenderer(canvas);window.marqueeRenderers.push(renderer);}catch(error){console.warn('Failed to initialize marquee renderer:',error);}});}
+initAnimations(){try{new SphereAnimation();}catch(error){console.warn('Sphere animation failed to initialize:',error);}
+try{new WaveAnimation();}catch(error){console.warn('Wave animation failed to initialize:',error);}}
+initScrollBehavior(){let ticking=false;const updateScrollBehavior=()=>{if(!ticking){requestAnimationFrame(()=>{ticking=false;});ticking=true;}};window.addEventListener('scroll',updateScrollBehavior,{passive:true});}
+preloadAssets(){const cursorImg=new Image();cursorImg.src='image/mou.png';const criticalImages=['image/11.png','imagew/11.png','image/22.png','imagew/22.png','image/33.png','imagew/33.png','image/44.png','imagew/44.png','image/55.png','imagew/55.png','image/77.png','imagew/77.png','image/gh.png','imagew/gh.png'];criticalImages.forEach(src=>{const img=new Image();img.src=src;});}}
+if('serviceWorker'in navigator&&window.location.protocol==='https:'){navigator.serviceWorker.register('/sw.js').catch(err=>{console.log('Service worker registration failed:',err);});}
+new Application();</script>
+</body>
+</html>
